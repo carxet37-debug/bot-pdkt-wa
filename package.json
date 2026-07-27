@@ -1,0 +1,24 @@
+{
+  "name": "bot-pdkt-wa",
+  "version": "1.0.0",
+  "description": "Bot WhatsApp Game PDKT untuk Icebreaker & Obrolan Seru",
+  "main": "bot_pdkt_wa.js",
+  "scripts": {
+    "start": "node bot_pdkt_wa.js",
+    "dev": "node bot_pdkt_wa.js"
+  },
+  "keywords": [
+    "whatsapp",
+    "bot",
+    "pdkt",
+    "game",
+    "baileys"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.5.0",
+    "qrcode-terminal": "^0.12.0",
+    "pino": "^8.14.1"
+  }
+}
