@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>This or That — PDKT Edition 💫</title>
+  <style>
+    :root {
+      --bg: #121214;
+      --card-bg: #1e1e24;
+      --accent-1: #ff4b72;
+      --accent-2: #8a2be2;
+      --text: #ffffff;
+      --subtext: #a0a0ab;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    header {
+      margin-bottom: 24px;
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+    }
+
+    header p {
+      color: var(--subtext);
+      font-size: 0.9rem;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: #2a2a35;
+      border-radius: 10px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+      transition: width 0.3s ease;
+    }
+
+    .quiz-card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 24px 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+
+    .option-btn {
+      background: #2a2a35;
+      border: 2px solid transparent;
+      color: var(--text);
+      padding: 20px 16px;
+      border-radius: 16px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .option-btn:hover, .option-btn:active {
+      border-color: var(--accent-1);
+      background: #323242;
+      transform: translateY(-2px);
+    }
+
+    .vs-badge {
+      color: var(--subtext);
+      font-weight: 800;
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+    }
+
+    /* Result Screen */
+    .result-screen {
+      display: none;
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 32px 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .score-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 0 auto 20px auto;
+      box-shadow: 0 0 20px rgba(255, 75, 114, 0.4);
+    }
+
+    .result-title {
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+    }
+
+    .result-desc {
+      color: var(--subtext);
+      font-size: 0.95rem;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    .share-btn {
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+      border: none;
+      color: white;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>This or That 💫</h1>
+      <p id="subtitle">Pilih yang paling menggambarkan kamu!</p>
+    </header>
+
+    <div class="progress-bar" id="p-bar">
+      <div class="progress-fill" id="progress"></div>
+    </div>
+
+    <!-- Quiz Area -->
+    <div class="quiz-card" id="quiz-card">
+      <button class="option-btn" onclick="selectOption(1)" id="opt1">Option A</button>
+      <span class="vs-badge">ATAU</span>
+      <button class="option-btn" onclick="selectOption(2)" id="opt2">Option B</button>
+    </div>
+
+    <!-- Result Area -->
+    <div class="result-screen" id="result-screen">
+      <div class="score-circle" id="score-text">0%</div>
+      <h2 class="result-title" id="result-title">Tingkat Kecocokan</h2>
+      <p class="result-desc" id="result-desc">Deskripsi hasil kuis...</p>
+      <button class="share-btn" onclick="resetQuiz()">Coba Lagi 🔄</button>
+    </div>
+  </div>
+
+  <script>
+    // Daftar Pertanyaan Kuis
+    const questions = [
+      { a: "☕ Kopi santai di kafe", b: "🧋 Es Boba sambil jalan" },
+      { a: "⛰️ Liburan ke gunung", b: "🏖️ Santai di pantai" },
+      { a: "🍿 Nonton bioskop", b: "🛋️ Netflix-an di rumah" },
+      { a: "🌙 Begadang / Night Owl", b: "☀️ Bangun pagi / Early Bird" },
+      { a: "🍕 Makanan Manis", b: "🌶️ Makanan Pedas" },
+      { a: "📱 Chattingan tiap jam", b: "📞 Call / VN kalau luang" }
+    ];
+
+    let currentIndex = 0;
+    let userAnswers = [];
+
+    const quizCard = document.getElementById('quiz-card');
+    const opt1 = document.getElementById('opt1');
+    const opt2 = document.getElementById('opt2');
+    const progress = document.getElementById('progress');
+    const resultScreen = document.getElementById('result-screen');
+    const pBar = document.getElementById('p-bar');
+
+    function loadQuestion() {
+      if (currentIndex < questions.length) {
+        // Update Progress
+        const percent = (currentIndex / questions.length) * 100;
+        progress.style.width = percent + '%';
+
+        // Set Teks Tombol
+        opt1.innerHTML = questions[currentIndex].a;
+        opt2.innerHTML = questions[currentIndex].b;
+      } else {
+        showResults();
+      }
+    }
+
+    function selectOption(choice) {
+      userAnswers.push(choice);
+      
+      // Animasi transisi antar kartu
+      quizCard.style.opacity = '0';
+      quizCard.style.transform = 'translateY(10px)';
+
+      setTimeout(() => {
+        currentIndex++;
+        loadQuestion();
+        quizCard.style.opacity = '1';
+        quizCard.style.transform = 'translateY(0)';
+      }, 200);
+    }
+
+    function showResults() {
+      quizCard.style.display = 'none';
+      pBar.style.display = 'none';
+      resultScreen.style.display = 'block';
+
+      // Simulasi skor acak estetik (80% - 98%) biar selalu terkesan cocok
+      const randomScore = Math.floor(Math.random() * 19) + 80;
+      
+      document.getElementById('score-text').innerText = randomScore + '%';
+      document.getElementById('subtitle').innerText = 'Hasil Kuis Kamu';
+
+      document.getElementById('result-desc').innerHTML = 
+        `Kalian ternyata punya selera yang mirip banget! <br><br><b>Sisa ${100 - randomScore}%-nya</b> tinggal dibahas langsung pas kalian jalan bareng 😉`;
+    }
+
+    function resetQuiz() {
+      currentIndex = 0;
+      userAnswers = [];
+      quizCard.style.display = 'flex';
+      pBar.style.display = 'block';
+      resultScreen.style.display = 'none';
+      document.getElementById('subtitle').innerText = 'Pilih yang paling menggambarkan kamu!';
+      loadQuestion();
+    }
+
+    // Jalankan pertama kali
+    loadQuestion();
+  </script>
+</body>
+</html>
